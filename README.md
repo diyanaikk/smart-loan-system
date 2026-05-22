@@ -30,13 +30,15 @@ A full-stack Smart Loan Management System developed using Angular and Spring Boo
 
 ## Project Structure
 
+```text
 smart-loan-system/
 │
 ├── front-end/
-│ └── Angular Application
+│   └── Angular Application
 │
 ├── back-end/
-│ └── Spring Boot Application
+│   └── Spring Boot Application
+```
 
 ## How to Run
 
