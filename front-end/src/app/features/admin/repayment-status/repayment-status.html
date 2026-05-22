@@ -1,0 +1,48 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="container mt-5">
+
+  <h2 class="fw-bold mb-4">
+    Repayment Status
+  </h2>
+
+  <table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+      <tr>
+        <th>Loan ID</th>
+        <th>User ID</th>
+        <th>EMI Amount</th>
+        <th>Due Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let r of repayments">
+
+        <td>{{ r.loanId }}</td>
+        <td>{{ r.userId }}</td>
+        <td>₹ {{ r.emi }}</td>
+        <td>{{ r.dueDate }}</td>
+
+        <td>
+          <span class="badge fs-6"
+            [ngClass]="{
+              'bg-success': r.status === 'PAID',
+              'bg-warning text-dark': r.status === 'PENDING'
+            }">
+
+            {{ r.status }}
+
+          </span>
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

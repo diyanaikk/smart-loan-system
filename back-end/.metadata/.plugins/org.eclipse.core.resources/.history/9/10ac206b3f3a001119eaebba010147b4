@@ -1,0 +1,105 @@
+package com.example.loanservice.service;
+
+import com.example.loanservice.entity.Loan;
+import com.example.loanservice.repository.LoanRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate; //used to call another API
+import java.util.Map;
+import dto.CreditScoreDTO;
+
+import java.util.List;
+
+@Service
+//marks this as service layer 
+public class LoanService {
+
+    @Autowired
+    //injects repositories automatically
+    private LoanRepository loanRepository;
+
+    // Apply Loan-> this is to save loan + set status
+    public Loan applyLoan(Loan loan) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        //this objects makes HTTP calls
+
+        String userUrl = "http://localhost:8081/users/" + loan.getUserId();
+        //suppose getUserId is 1
+        	//-> it becomes "http://localhost:8081/users/1
+
+        try {
+        	//to call user service
+        	Map<String,Object> user=restTemplate.getForObject(userUrl, Map.class);
+            //JSON is converted to MAp
+
+            if (user == null) {
+                throw new RuntimeException("User not found");
+                //If API returns nothing → error
+            }
+            
+            double salary=Double.parseDouble(user.get("salary").toString());
+            //get salary value from response
+            
+            int loanCount=loanRepository.countByUserId(loan.getUserId());
+            
+            String creditUrl="hhtp://localhost:8083/credit/"+loan.getUserId();
+            
+            CreditScoreDTO cs = restTemplate.getForObject(creditUrl, CreditScoreDTO.class);
+            
+            
+            if(salary>30000 && loanCount<3) {
+            	loan.setStatus("APPROVED");
+            }
+            else {
+            	loan.setStatus("REJECTED");
+            }
+        } 
+        
+        catch (Exception e) {
+            throw new RuntimeException("User does not exist");
+        }
+	/*
+	 * Before saving loan:
+	 * 
+	 * Calls User Service 
+	 * Checks if user exists 
+	 * If NOT → throws error 
+	 * If YES → saves loan
+	 */
+        
+        return loanRepository.save(loan);
+    }
+
+    // Get all loans -> this is to fetch all loans
+    public List<Loan> getAllLoans() {
+        return loanRepository.findAll();
+    }
+
+    // Get loans by user -> this is to filter by users
+    public List<Loan> getLoansByUserId(Long userId) {
+        return loanRepository.findByUserId(userId);
+    }
+    
+    //Long id-> will be the loan to update
+    //status-> update to new status (APPROVED/REJECTED)
+    public Loan updateLoanStatus(Long id, String status) {
+        Loan loan = loanRepository.findById(id).orElse(null);
+        //findById(id)-> this will return Optional<Loan>
+        //orElse(null)-> if found: return that loan
+        				//if NOT found-> returns null
+        //so loan is actual obj or null
+
+        if (loan != null) {
+            loan.setStatus(status);
+            return loanRepository.save(loan); //save updated loan in DB
+        }
+
+        return null;
+    }
+}
+
+
+//this file connects controller -> repository
+//this contains business logic
+	

@@ -1,0 +1,60 @@
+package com.example.api;
+
+import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
+import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.function.RequestPredicates;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.ServerResponse;
+
+import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.routeId;
+
+@Configuration
+public class GatewayConfig {
+
+    @Bean
+    public RouterFunction<ServerResponse> userServiceRoute() {
+        return GatewayRouterFunctions.route("user-service")
+                .route(RequestPredicates.path("/users/**"), HandlerFunctions.http())
+                .filter(routeId("user-service"))
+                .withAttribute("spring.cloud.gateway.mvc.route.uri", "lb://user-service")
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> loanServiceRoute() {
+        return GatewayRouterFunctions.route("loan-servicee")
+                .route(RequestPredicates.path("/loans/**"), HandlerFunctions.http())
+                .filter(routeId("loan-servicee"))
+                .withAttribute("spring.cloud.gateway.mvc.route.uri", "lb://loan-servicee")
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> creditServiceRoute() {
+        return GatewayRouterFunctions.route("credit-score-service")
+                .route(RequestPredicates.path("/credit/**"), HandlerFunctions.http())
+                .filter(routeId("credit-score-service"))
+                .withAttribute("spring.cloud.gateway.mvc.route.uri", "lb://credit-score-service")
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> notificationServiceRoute() {
+        return GatewayRouterFunctions.route("notification-servicee")
+                .route(RequestPredicates.path("/notifications/**"), HandlerFunctions.http())
+                .filter(routeId("notification-servicee"))
+                .withAttribute("spring.cloud.gateway.mvc.route.uri", "lb://notification-servicee")
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> paymentServiceRoute() {
+        return GatewayRouterFunctions.route("payment-service")
+                .route(RequestPredicates.path("/payments/**"), HandlerFunctions.http())
+                .filter(routeId("payment-service"))
+                .withAttribute("spring.cloud.gateway.mvc.route.uri", "lb://payment-service")
+                .build();
+    }
+}

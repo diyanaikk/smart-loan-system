@@ -1,0 +1,74 @@
+.container {
+    padding-bottom: 40px;
+}
+
+h2 {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Dashboard Cards */
+
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-body h5 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.card-body h3 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+/* Table */
+
+.table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table th {
+    padding: 16px;
+    font-size: 18px;
+}
+
+.table td {
+    padding: 16px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: #f3f4f6;
+    transition: 0.2s;
+}
+
+/* Status Badges */
+
+.badge {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+/* Buttons */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* Responsive Table */
+
+.table-responsive {
+    overflow-x: auto;
+}

@@ -1,0 +1,65 @@
+package com.example.userservice.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.userservice.entity.User;
+import com.example.userservice.service.UserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+//used fpr API documentation -> swagger
+import jakarta.validation.Valid; //validate input data
+
+@CrossOrigin(origins="*")
+@RestController  //@Controller+@ResponseBody
+//makes it REST API -> automatically converts respone to JSON
+
+@RequestMapping("/users")
+//converts this URL to method 
+
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+    //inject Service layer here
+    
+    @Operation(summary="add users")
+    @PostMapping
+    //API to add user
+    public User addUser(@Valid @RequestBody User user) {
+    	//@requestbody: converts JSON to java object
+        return userService.saveUser(user);
+    }
+
+    @Operation(summary="Get all users")
+    @GetMapping("/all")
+    //API to fetch data for all users
+    public List<User> getUsers() {
+        return userService.getAllUsers();
+    }
+    
+    @Operation(summary="Get users by ID")
+    @GetMapping("/{id}")
+    //get users by ID
+    public User getuserById(@PathVariable Long id) {
+    	//path variable extracts value from URL
+    	return userService.getUserById(id);
+    }
+    
+    @PostMapping("/login")
+    public User login(@RequestBody User user) {
+
+        return userService.login(
+            user.getEmail(),
+            user.getPassword()
+        );
+    }
+}
+
+
+
+
+//controller handles API request and maps them to service
+//@RequestBody -> will take JSON input and converts it into java object

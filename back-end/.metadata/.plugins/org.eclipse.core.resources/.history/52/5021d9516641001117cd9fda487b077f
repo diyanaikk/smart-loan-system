@@ -1,0 +1,56 @@
+package com.example.api;
+
+import java.net.URI;
+
+import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
+import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.function.RequestPredicates;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.ServerResponse;
+
+@Configuration
+public class GatewayConfig {
+
+    @Bean
+    public RouterFunction<ServerResponse> userServiceRoute() {
+        return GatewayRouterFunctions.route("user-service")
+                .route(RequestPredicates.path("/users/**"), HandlerFunctions.http())
+                .withAttribute(MvcUtils.GATEWAY_REQUEST_URL_ATTR, URI.create("lb://user-service"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> loanServiceRoute() {
+        return GatewayRouterFunctions.route("loan-servicee")
+                .route(RequestPredicates.path("/loans/**"), HandlerFunctions.http())
+                .withAttribute(MvcUtils.GATEWAY_REQUEST_URL_ATTR, URI.create("lb://loan-servicee"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> creditServiceRoute() {
+        return GatewayRouterFunctions.route("credit-score-service")
+                .route(RequestPredicates.path("/credit/**"), HandlerFunctions.http())
+                .withAttribute(MvcUtils.GATEWAY_REQUEST_URL_ATTR, URI.create("lb://credit-score-service"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> notificationServiceRoute() {
+        return GatewayRouterFunctions.route("notification-servicee")
+                .route(RequestPredicates.path("/notifications/**"), HandlerFunctions.http())
+                .withAttribute(MvcUtils.GATEWAY_REQUEST_URL_ATTR, URI.create("lb://notification-servicee"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> paymentServiceRoute() {
+        return GatewayRouterFunctions.route("payment-service")
+                .route(RequestPredicates.path("/payments/**"), HandlerFunctions.http())
+                .withAttribute(MvcUtils.GATEWAY_REQUEST_URL_ATTR, URI.create("lb://payment-service"))
+                .build();
+    }
+}

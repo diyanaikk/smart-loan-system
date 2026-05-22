@@ -1,0 +1,131 @@
+<div class="register-container">
+
+  <div class="register-card">
+
+    <h1>Create Account</h1>
+
+    <p>
+      Register for Smart Loan System
+    </p>
+
+    <form (ngSubmit)="registerUser()">
+
+      <div class="form-group">
+
+        <label>Full Name</label>
+
+        <input
+          type="text"
+          [(ngModel)]="registerData.name"
+          name="name"
+          placeholder="Enter full name"
+          required
+        />
+
+      </div>
+
+      <div class="form-group">
+
+  <label>Username</label>
+
+  <input
+    type="text"
+    placeholder="Username"
+    [(ngModel)]="registerData.username"
+    name="username"
+    required
+  />
+
+</div>
+
+<div class="form-group">
+
+  <label>Password</label>
+
+  <input
+    type="password"
+    placeholder="Password"
+    [(ngModel)]="registerData.password"
+    name="password"
+    required
+  />
+
+</div>
+
+      <div class="form-group">
+
+        <label>Email</label>
+
+        <input
+          type="email"
+          [(ngModel)]="registerData.email"
+          name="email"
+          placeholder="Enter email"
+          required
+        />
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Salary</label>
+
+        <input
+          type="number"
+          [(ngModel)]="registerData.salary"
+          name="salary"
+          placeholder="Enter salary"
+          required
+        />
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Employment Type</label>
+
+        <select
+          [(ngModel)]="registerData.employmentType"
+          name="employmentType"
+          required
+        >
+
+          <option value="">
+            Select Employment Type
+          </option>
+
+          <option value="Salaried">
+            Salaried
+          </option>
+
+          <option value="Part-time">
+            Part-time
+          </option>
+
+          <option value="Self-employed">
+            Self-employed
+          </option>
+
+        </select>
+
+      </div>
+
+      <button type="submit">
+
+        Create Account
+
+      </button>
+
+    </form>
+
+    <p class="success">
+      {{ successMsg }}
+    </p>
+
+    <p class="error">
+      {{ errorMsg }}
+    </p>
+
+  </div>
+
+</div>

@@ -1,0 +1,226 @@
+//contains business logic 
+
+package com.example.loanservice.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.loanservice.dto.CreditScoreDTO;
+import com.example.loanservice.dto.PaymentRequest;
+import com.example.loanservice.entity.Loan;
+import com.example.loanservice.repository.LoanRepository;
+
+@Service
+//marks this as service layer 
+public class LoanService {
+
+	private static final Logger logger = LoggerFactory.getLogger(LoanService.class);
+	//debugging + monitoring
+	
+    @Autowired
+    //injects repositories automatically
+    private LoanRepository loanRepository;
+    //used to store and fetch loans from DB
+    
+    @Autowired
+    private RestTemplate restTemplate;
+    //this objects makes HTTP calls
+
+
+    // Apply Loan-> this is to save loan + set status
+    public Loan applyLoan(Loan loan) {
+
+    	logger.info("Applying loan for userId: {}", loan.getUserId());
+    	
+    	logger.info("Calling USER-SERVICE for userId: {}", loan.getUserId());
+    	//calls user service and fetch their details
+        String userUrl = "http://USER-SERVICE/users/" + loan.getUserId();
+        
+        //suppose getUserId is 1
+        	//-> it becomes "http://localhost:8081/users/1
+
+        try {
+        	//to call user service
+        	Map<String,Object> user=restTemplate.getForObject(userUrl, Map.class);
+            //JSON is converted to MAp
+
+            if (user == null) {
+                throw new RuntimeException("User not found");
+                //If API returns nothing → error (stop loan process)
+            }
+            
+            double salary=Double.parseDouble(user.get("salary").toString());
+            //extract salary from response
+            
+            logger.info("User fetched successfully. Salary: {}", salary);
+            //get salary value from response
+            
+            int loanCount=loanRepository.countByUserId(loan.getUserId());
+            
+            logger.info("Calling CREDIT-SCORE-SERVICE for userId: {}", loan.getUserId());
+            
+            //fetches credit score
+            String creditUrl="http://CREDIT-SCORE-SERVICE/credit/" + loan.getUserId();
+            
+            CreditScoreDTO cs = restTemplate.getForObject(creditUrl, CreditScoreDTO.class);
+            
+            if(
+            		cs != null
+            		&& cs.getScore() >= 70
+            		&& salary >= 30000
+            		&& loan.getAmount() <= 500000
+            		&& loan.getTenure() <= 10
+            	) {
+
+            		loan.setStatus("APPROVED");
+            		
+            		// reduce credit score slightly
+            		int updatedScore = cs.getScore() - 5;
+
+            		logger.info(
+            		    "Updated Credit Score: {}",
+            		    updatedScore
+            		);
+
+            		logger.info(
+            			"Loan APPROVED for userId: {}",
+            			loan.getUserId()
+            		);
+
+            	}
+            	else if(
+            		cs != null
+            		&& cs.getScore() >= 60
+            		&& salary >= 20000
+            	) {
+
+            		loan.setStatus("PENDING");
+
+            		logger.info(
+            			"Loan PENDING for userId: {}",
+            			loan.getUserId()
+            		);
+
+            	}
+            	else {
+
+            		loan.setStatus("REJECTED");
+
+            		logger.info(
+            			"Loan REJECTED for userId: {}",
+            			loan.getUserId()
+            		);
+
+            	}
+            
+            Map<String,Object> notifyRequest= new HashMap<>();
+			/*
+			 * {
+			 * 		 "useterId": 1, 
+			 * 		 "message": "Loan APPROVED"
+			 * }
+			 */
+            notifyRequest.put("userId", loan.getUserId());
+            notifyRequest.put("message", "Loan "+loan.getStatus());
+            //creating request body to send to notification service
+            
+            logger.info("Sending notification for userId: {}", loan.getUserId());
+            String notifyResponse = null;
+
+            try {
+                notifyResponse = restTemplate.postForObject(
+                    "http://NOTIFICATION-SERVICEE/notify",
+                    notifyRequest,
+                    String.class
+                );
+            } catch (Exception e) {
+                System.out.println("Notification failed, continuing...");
+                notifyResponse = "Notification failed";
+            }
+
+            //send notification: "APPROVED" or "REJECTED"
+            
+            logger.info("Notification response: {}", notifyResponse);
+            
+            loan.setNotificationMessage(notifyResponse);  //save response
+        }
+        
+        catch (Exception e) {
+        	logger.error("Error while processing loan for userId: {}", loan.getUserId(), e);//shows real error
+            throw new RuntimeException("User does not exist");
+        }
+	/*
+	 * Before saving loan:
+	 * 
+	 * Calls User Service 
+	 * Checks if user exists 
+	 * If NOT → throws error 
+	 * If YES → saves loan
+	 */
+        
+        return loanRepository.save(loan);
+    }
+
+    // Get all loans -> this is to fetch all loans
+    public List<Loan> getAllLoans() {
+    	logger.info("Fetching all loans");
+        return loanRepository.findAll();  //get all loans
+    }
+
+    // Get loans by user -> this is to filter by users
+    public List<Loan> getLoansByUserId(Long userId) {
+    	logger.info("Fetching loans for userId: {}", userId);
+        return loanRepository.findByUserId(userId);   // get loans by user
+    }
+    
+    //Long id-> will be the loan to update
+    //status-> update to new status (APPROVED/REJECTED)
+    public Loan updateLoanStatus(Long id, String status) {
+    	logger.info("Updating loan status. LoanId: {}, Status: {}", id, status);
+        Loan loan = loanRepository.findById(id).orElse(null);
+        //findById(id)-> this will return Optional<Loan>
+        //orElse(null)-> if found: return that loan
+        				//if NOT found-> returns null
+        //so loan is actual obj or null
+
+        if (loan != null) {
+            loan.setStatus(status);
+            
+            if(status.equalsIgnoreCase("APPROVED")) {
+            	//if approved call payment service
+            	PaymentRequest paymentRequest = new PaymentRequest();
+
+            	paymentRequest.setUserId(loan.getUserId());
+
+            	paymentRequest.setAmount(loan.getAmount());
+
+            	paymentRequest.setLoanId(loan.getId());
+
+            	paymentRequest.setTenure(loan.getTenure());
+            String paymentResponse=restTemplate.postForObject(
+            		"http://PAYMENT-SERVICE/pay",
+            		paymentRequest,
+            		String.class);
+            
+            System.out.println("Payment Response: " + paymentResponse);
+            	
+            }
+            
+            return loanRepository.save(loan); //save updated loan in DB
+        }
+
+        return null;
+    }
+}
+
+
+//this file connects controller -> repository
+//this contains business logic
+	

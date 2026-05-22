@@ -1,0 +1,44 @@
+<div class="login-page">
+
+  <div class="overlay"></div>
+
+  <div class="login-card">
+
+    <div class="brand-section">
+      <h1>Smart Loan System</h1>
+      <p>Fast • Secure • Intelligent Loan Processing</p>
+    </div>
+
+    <div class="form-section">
+
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Login to continue</p>
+
+      <input
+        type="text"
+        placeholder="Enter Username"
+        [(ngModel)]="username"
+      />
+
+      <input
+        type="password"
+        placeholder="Enter Password"
+      />
+
+      <button (click)="onLogin()">
+        Login
+      </button>
+
+      <div class="register-link">
+        <span>New user?</span>
+
+        <button routerLink="/register" class="register-btn">
+          Create Account
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

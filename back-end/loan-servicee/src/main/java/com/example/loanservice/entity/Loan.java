@@ -1,0 +1,90 @@
+package com.example.loanservice.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+//this import gives all JPA annotations like: @Entity, @Table, @Id, @GeneratedValue	
+
+@Entity
+//marks this as JPA entity
+@Table(name = "loans")
+//this will specify the table name
+public class Loan {
+
+    @Id
+    //marks primary ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //Auto-generates ID
+    private Long id;
+
+    @NotNull(message="User ID is required")
+    private Long userId;
+    @NotNull(message="Amount is required")
+    @Min(value=1000, message="Minimum loan amount is 1000")
+    private double amount;
+    @NotNull(message="Tenure is required")
+    @Min(value=1, message="Tenure must be at least 1 year")
+    @Max(value=10, message="Tenure cannot exceed 10 years")
+    private int tenure;
+
+    private String status;
+    //columns in DB
+
+    @Transient  //fields are excluded from database persistence
+    private String notificationMessage;
+    //not stored in DB, just for response data
+    
+    public Loan() {}
+
+    public Loan(Long userId, double amount, int tenure, String status) {
+        this.userId = userId;
+        this.amount = amount;
+        this.tenure = tenure;
+        this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public int getTenure() {
+        return tenure;
+    }
+
+    public void setTenure(int tenure) {
+        this.tenure = tenure;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+	public String getNotificationMessage() {
+		return notificationMessage;
+	}
+
+	public void setNotificationMessage(String notificationMessage) {
+		this.notificationMessage = notificationMessage;
+	}
+    
+    
+}

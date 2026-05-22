@@ -1,0 +1,53 @@
+//this 	file handles all HTTP requests
+//talks to service layer
+
+package com.example.loanservice.controller;
+
+import com.example.loanservice.entity.Loan;
+import com.example.loanservice.service.LoanService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+//converts the class to REST API
+@RequestMapping("/loans")
+//base URL
+public class LoanController {
+
+    @Autowired
+    private LoanService loanService;
+
+    // Apply Loan
+    @PostMapping
+    //for creating loan
+    public Loan applyLoan(@RequestBody Loan loan) {
+        return loanService.applyLoan(loan);
+    }
+    //@RequestBody-> takes JSON input
+
+    // Get all loans
+    @GetMapping
+    //fetching loan
+    public List<Loan> getAllLoans() {
+        return loanService.getAllLoans();
+    }
+
+    // Get loans by user
+    @GetMapping("/user/{userId}")
+    //@PathVariable -> takes value from URL
+    public List<Loan> getLoansByUser(@PathVariable Long userId) {
+        return loanService.getLoansByUserId(userId);
+    }
+    
+    //update
+    @PutMapping("/{id}/status")
+    public Loan updateStatus(@PathVariable Long id, @RequestParam String status) {
+        return loanService.updateLoanStatus(id, status);
+    }
+    
+    //@RequestParam will take value from query
+    //?status=APPROVED → status= APPROVED
+}

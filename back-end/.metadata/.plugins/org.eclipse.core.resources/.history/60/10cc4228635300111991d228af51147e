@@ -1,0 +1,37 @@
+package com.example.payment.service;
+
+import com.example.payment.dto.PaymentRequest;
+import com.example.payment.entity.Repayment;
+import com.example.payment.repository.RepaymentRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+
+@Service
+public class PaymentService {
+
+    @Autowired
+    private RepaymentRepository repaymentRepository;
+
+    public String processPayment(PaymentRequest request) {
+
+        Double emi =
+                request.getAmount() / request.getTenure();
+
+        Repayment repayment = new Repayment(
+                request.getLoanId(),
+                request.getUserId(),
+                request.getAmount(),
+                emi,
+                request.getAmount(),
+                LocalDate.now().plusMonths(1),
+                "PENDING"
+        );
+
+        repaymentRepository.save(repayment);
+
+        return "Repayment schedule created successfully";
+    }
+}

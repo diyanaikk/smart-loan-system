@@ -1,0 +1,47 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="container mt-5">
+
+  <h2 class="fw-bold mb-4">Pending Loans</h2>
+
+  <div *ngIf="loans.length === 0" class="alert alert-info text-center">
+    No pending loans at the moment! 🎉
+  </div>
+
+  <div class="table-responsive" *ngIf="loans.length > 0">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Loan ID</th>
+          <th>User ID</th>
+          <th>Amount (₹)</th>
+          <th>Tenure (Years)</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let loan of loans">
+          <td>{{ loan.id }}</td>
+          <td>{{ loan.userId }}</td>
+          <td>{{ loan.amount | number }}</td>
+          <td>{{ loan.tenure }}</td>
+          <td>
+            <span class="badge bg-warning text-dark fs-6">PENDING</span>
+          </td>
+          <td>
+            <button class="btn btn-success btn-sm me-2"
+              (click)="approveLoan(loan.id)">
+              ✅ Approve
+            </button>
+            <button class="btn btn-danger btn-sm"
+              (click)="rejectLoan(loan.id)">
+              ❌ Reject
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

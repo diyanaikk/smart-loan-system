@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+
+  <a class="navbar-brand fw-bold text-primary">
+
+    Smart Loan System
+
+  </a>
+
+  <div class="collapse navbar-collapse">
+
+    <ul class="navbar-nav ms-auto">
+
+      <li class="nav-item">
+
+        <a
+          class="nav-link"
+          routerLink="/user-dashboard"
+        >
+          Dashboard
+        </a>
+
+      </li>
+
+      <li class="nav-item">
+
+        <a
+          class="nav-link"
+          routerLink="/apply-loan"
+        >
+          Apply Loan
+        </a>
+
+      </li>
+
+      <li class="nav-item">
+
+        <a
+          class="nav-link"
+          routerLink="/loan-history"
+        >
+          Loan History
+        </a>
+
+      </li>
+
+      <li class="nav-item">
+
+        <a
+          class="nav-link"
+          routerLink="/credit-score"
+        >
+          Credit Score
+        </a>
+
+      </li>
+
+      <li class="nav-item">
+
+        <button
+            class="btn btn-danger ms-3"
+            (click)="logout()"
+            >
+            Logout
+        </button>
+
+      </li>
+
+    </ul>
+
+  </div>
+
+</nav>

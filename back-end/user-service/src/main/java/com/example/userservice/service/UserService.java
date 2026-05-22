@@ -1,0 +1,66 @@
+package com.example.userservice.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.userservice.entity.User;
+import com.example.userservice.repository.UserRepository;
+
+import org.slf4j.Logger;
+//Simple Logging Facade for Java
+import org.slf4j.LoggerFactory;
+
+@Service
+public class UserService {
+	
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
+    @Autowired
+    //spring will automatically give objects of USerRepo
+    
+    private UserRepository userRepository;
+    
+    //saves data
+    public User saveUser(User user) {
+    	logger.info("Saving user: {}", user.getName());
+        return userRepository.save(user);
+    }
+
+    //fetches data
+    public List<User> getAllUsers() {
+    	logger.info("Fetching all users");
+        return userRepository.findAll();
+    }
+    
+    public User getUserById(Long id) {
+    	return userRepository.findById(id).orElse(null);
+    	//if GET/users -> all users
+    	//if GET/users/1 -> single user
+    }
+    
+    public User login(String username, String password) {
+
+        User user = userRepository
+            .findByUsername(username)
+            .orElse(null);
+
+        if(user != null &&
+           user.getPassword().equals(password)) {
+
+            return user;
+        }
+
+        return null;
+    }
+        
+    
+}
+
+
+
+//this file contains business logic
+//@Controller -> calls the service
+//@Servce -> calls repo

@@ -1,0 +1,149 @@
+<app-user-navbar></app-user-navbar>
+
+<div class="container mt-5" style="max-width: 900px;">
+
+  <div class="card shadow border-0 rounded-4 p-5">
+
+    <h1 class="fw-bold mb-2">
+      Loan Application
+    </h1>
+
+    <p class="text-muted mb-5">
+      Fill in the details to apply for a loan
+    </p>
+
+    <div class="row">
+
+      <div class="col-md-6 mb-4">
+
+        <label class="form-label fw-semibold">
+          Full Name
+        </label>
+
+        <input
+          type="text"
+          class="form-control form-control-lg"
+          placeholder="Enter full name"
+          [(ngModel)]="loanData.applicantName"
+        >
+
+      </div>
+
+      <div class="col-md-6 mb-4">
+
+        <label class="form-label fw-semibold">
+          Loan Type
+        </label>
+
+        <select
+          class="form-select form-select-lg"
+          [(ngModel)]="loanData.loanType"
+        >
+
+          <option value="">
+            Select Loan Type
+          </option>
+
+          <option value="Home Loan">
+            Home Loan
+          </option>
+
+          <option value="Car Loan">
+            Car Loan
+          </option>
+
+          <option value="Education Loan">
+            Education Loan
+          </option>
+
+          <option value="Personal Loan">
+            Personal Loan
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="col-md-6 mb-4">
+
+  <label class="form-label fw-semibold">
+    Loan Amount
+  </label>
+
+  <input
+    type="range"
+    class="form-range"
+    min="10000"
+    max="1000000"
+    step="10000"
+    [(ngModel)]="loanData.amount"
+  >
+
+  <div class="fw-bold text-primary fs-5">
+    ₹ {{ loanData.amount }}
+  </div>
+
+</div>
+
+      <div class="col-md-6 mb-4">
+
+  <label class="form-label fw-semibold">
+    Monthly Salary
+  </label>
+
+  <input
+    type="range"
+    class="form-range"
+    min="10000"
+    max="200000"
+    step="5000"
+    [(ngModel)]="loanData.salary"
+  >
+
+  <div class="fw-bold text-success fs-5">
+    ₹ {{ loanData.salary }}
+  </div>
+
+</div>
+
+      <div class="col-md-6 mb-4">
+
+        <label class="form-label fw-semibold">
+          Tenure (Years)
+        </label>
+
+        <input
+          type="number"
+          class="form-control form-control-lg"
+          placeholder="Enter tenure"
+          [(ngModel)]="loanData.tenure"
+        >
+
+      </div>
+
+    </div>
+
+    <button
+      class="btn btn-primary btn-lg w-100 fw-bold mt-3"
+      (click)="applyLoan()"
+    >
+      Submit Loan Request
+    </button>
+
+    <div
+      *ngIf="successMsg"
+      class="alert alert-success mt-4 text-center"
+    >
+      {{ successMsg }}
+    </div>
+
+    <div
+      *ngIf="errorMsg"
+      class="alert alert-danger mt-4 text-center"
+    >
+      {{ errorMsg }}
+    </div>
+
+  </div>
+
+</div>

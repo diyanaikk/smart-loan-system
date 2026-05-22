@@ -1,0 +1,71 @@
+<app-user-navbar></app-user-navbar>
+
+<div class="container mt-5">
+
+  <h2 class="mb-4 fw-bold">Loan Applications</h2>
+
+  <!-- Filter Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="filter === 'ALL'"
+        (click)="filter = 'ALL'" style="cursor:pointer;">
+        All <span class="badge bg-secondary ms-1">{{ loans.length }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="filter === 'APPROVED'"
+        (click)="filter = 'APPROVED'" style="cursor:pointer;">
+        Approved <span class="badge bg-success ms-1">{{ countBy('APPROVED') }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="filter === 'PENDING'"
+        (click)="filter = 'PENDING'" style="cursor:pointer;">
+        Pending <span class="badge bg-warning text-dark ms-1">{{ countBy('PENDING') }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="filter === 'REJECTED'"
+        (click)="filter = 'REJECTED'" style="cursor:pointer;">
+        Rejected <span class="badge bg-danger ms-1">{{ countBy('REJECTED') }}</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Loan ID</th>
+          <th>User ID</th>
+          <th>Amount (₹)</th>
+          <th>Tenure (Years)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let loan of filteredLoans()">
+          <td>{{ loan.id }}</td>
+          <td>{{ loan.userId }}</td>
+          <td>{{ loan.amount | number }}</td>
+          <td>{{ loan.tenure }}</td>
+          <td>
+            <span class="badge fs-6"
+              [ngClass]="{
+                'bg-success': loan.status === 'APPROVED',
+                'bg-danger': loan.status === 'REJECTED',
+                'bg-warning text-dark': loan.status === 'PENDING'
+              }">
+              {{ loan.status }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="filteredLoans().length === 0">
+          <td colspan="5" class="text-center text-muted py-4">No loans found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

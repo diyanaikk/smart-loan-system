@@ -1,0 +1,395 @@
+<!-- NAVBAR -->
+
+<nav
+  class="navbar navbar-expand-lg navbar-dark bg-dark px-4"
+>
+
+  <div class="container-fluid">
+
+    <a
+      class="navbar-brand fw-bold"
+      href="#"
+    >
+      SmartLoan System
+    </a>
+
+    <div class="collapse navbar-collapse show">
+
+      <ul class="navbar-nav ms-auto">
+
+        <li class="nav-item">
+
+          <a
+            class="nav-link"
+            routerLink="/user-dashboard"
+          >
+            Dashboard
+          </a>
+
+        </li>
+
+        <li class="nav-item">
+
+          <a
+            class="nav-link"
+            routerLink="/apply-loan"
+          >
+            Apply Loan
+          </a>
+
+        </li>
+
+        <li class="nav-item">
+
+          <a
+            class="nav-link active fw-bold"
+            routerLink="/loan-repayment"
+          >
+            Loan Repayment
+          </a>
+
+        </li>
+
+        <li class="nav-item">
+
+          <a
+            class="nav-link"
+            routerLink="/login"
+          >
+            Logout
+          </a>
+
+        </li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+</nav>
+
+
+<div class="container mt-4">
+
+  <h1 class="fw-bold mb-2">
+    EMI & Payment Details
+  </h1>
+
+  <p class="text-muted mb-4">
+    Track loan payments and EMI schedules
+  </p>
+
+  <!-- NO LOANS -->
+
+  <div
+    *ngIf="approvedLoans.length === 0"
+    class="alert alert-info"
+  >
+    No approved loans found.
+  </div>
+
+  <!-- LOANS -->
+
+  <div
+    *ngFor="let loan of approvedLoans"
+    class="card shadow-sm mb-4 p-4"
+  >
+
+    <!-- TOP SUMMARY -->
+
+    <div class="row text-center mb-4">
+
+      <div class="col-md-3 mb-3">
+
+        <div class="bg-light rounded p-3">
+
+          <h5>Loan Amount</h5>
+
+          <h2 class="text-primary fw-bold">
+            ₹ {{ loan.amount | number }}
+          </h2>
+
+        </div>
+
+      </div>
+
+      <div class="col-md-3 mb-3">
+
+        <div class="bg-light rounded p-3">
+
+          <h5>Monthly EMI</h5>
+
+          <h2 class="text-success fw-bold">
+            ₹ {{ loan.emis[0].amount | number }}
+          </h2>
+
+        </div>
+
+      </div>
+
+      <div class="col-md-3 mb-3">
+
+        <div class="bg-light rounded p-3">
+
+          <h5>Loan Status</h5>
+
+          <h2 class="text-warning fw-bold">
+            {{ loan.status }}
+          </h2>
+
+        </div>
+
+      </div>
+
+      <div class="col-md-3 mb-3">
+
+        <div class="bg-light rounded p-3">
+
+          <h5>Remaining Balance</h5>
+
+          <h2 class="text-danger fw-bold">
+            ₹ {{ loan.remainingBalance | number }}
+          </h2>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- EMI TABLE -->
+
+    <h3 class="mb-4">
+      EMI Payment History
+    </h3>
+
+    <div class="table-responsive">
+
+      <table class="table table-bordered">
+
+        <thead>
+
+          <tr>
+
+            <th>EMI No</th>
+            <th>Tenure</th>
+            <th>Monthly EMI</th>
+            <th>Status</th>
+            <th>Action</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="let emi of loan.emis"
+          >
+
+            <td>
+              EMI {{ emi.emiNumber }}
+            </td>
+
+            <td>
+              {{ loan.tenure }} Years
+            </td>
+
+            <td>
+              ₹ {{ emi.amount | number }}
+            </td>
+
+            <td>
+
+              <span
+                class="badge"
+                [ngClass]="
+                  emi.status === 'PAID'
+                  ? 'bg-success'
+                  : 'bg-warning text-dark'
+                "
+              >
+
+                {{ emi.status }}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+
+                class="btn btn-success btn-sm"
+
+                (click)="openPaymentPopup(loan, emi)"
+
+                [disabled]="
+                  emi.status === 'PAID' ||
+
+                  (
+                    emi.emiNumber > 1 &&
+                    loan.emis[emi.emiNumber - 2].status !== 'PAID'
+                  )
+                "
+
+              >
+
+                Pay EMI
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAYMENT POPUP -->
+
+<div
+  class="popup-overlay"
+  *ngIf="showPaymentPopup"
+>
+
+  <div class="payment-popup">
+
+    <h2 class="mb-2">
+      EMI Payment
+    </h2>
+
+    <p class="text-muted mb-4">
+      Enter card details
+    </p>
+
+    <!-- CARD -->
+
+    <label class="fw-bold mb-2">
+      Card Number
+    </label>
+
+    <div class="d-flex gap-2 mb-3">
+
+      <input
+        type="text"
+        maxlength="4"
+        class="form-control"
+        [(ngModel)]="card1"
+      >
+
+      <input
+        type="text"
+        maxlength="4"
+        class="form-control"
+        [(ngModel)]="card2"
+      >
+
+      <input
+        type="text"
+        maxlength="4"
+        class="form-control"
+        [(ngModel)]="card3"
+      >
+
+      <input
+        type="text"
+        maxlength="4"
+        class="form-control"
+        [(ngModel)]="card4"
+      >
+
+    </div>
+
+    <!-- NAME -->
+
+    <label class="fw-bold mb-2">
+      Card Holder Name
+    </label>
+
+    <input
+      type="text"
+      class="form-control mb-3"
+      placeholder="Sonali Dixit"
+      [(ngModel)]="cardName"
+    >
+
+    <!-- EXPIRY + CVV -->
+
+    <div class="row">
+
+      <div class="col-md-6">
+
+        <label class="fw-bold mb-2">
+          Expiry
+        </label>
+
+        <input
+          type="text"
+          maxlength="5"
+          class="form-control mb-3"
+          placeholder="12/29"
+          [(ngModel)]="expiry"
+          (input)="formatExpiry()"
+        >
+
+      </div>
+
+      <div class="col-md-6">
+
+        <label class="fw-bold mb-2">
+          CVV
+        </label>
+
+        <input
+          type="password"
+          maxlength="3"
+          class="form-control mb-3"
+          placeholder="•••"
+          [(ngModel)]="cvv"
+        >
+
+      </div>
+
+    </div>
+
+    <!-- EMI AMOUNT -->
+
+    <input
+      type="text"
+      class="form-control mb-4"
+      [value]="'EMI Amount ₹ ' + selectedEmi?.amount"
+      readonly
+    >
+
+    <!-- BUTTONS -->
+
+    <div class="d-flex justify-content-between">
+
+      <button
+        class="btn btn-outline-secondary"
+        (click)="closePopup()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-success"
+        (click)="confirmPayment()"
+      >
+        Pay Now
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
