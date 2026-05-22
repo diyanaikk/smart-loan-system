@@ -41,13 +41,13 @@ smart-loan-system/
 ## How to Run
 
 ### Frontend
-cd front-end
-npm install
-ng serve
+- cd front-end
+- npm install
+- ng serve
 
 ### Backend
-cd back-end
-mvn spring-boot:run
+- cd back-end
+- mvn spring-boot:run
 
 AUTHOR
 [@diyanaikk](https://github.com/diyanaikk)
